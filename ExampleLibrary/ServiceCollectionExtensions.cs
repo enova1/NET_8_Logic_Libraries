@@ -15,7 +15,7 @@ namespace ExampleLibrary
         {
             // Register the DAL here 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(connectionString));
+                options.UseSqlServer(connectionString));
 
             // Dependency Injection here
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();

@@ -12,9 +12,6 @@ namespace ExampleLibrary
             List<Employees> employees = await employeeDbContext.Employees!
                 .Include(e => e.EmployeePhones)
                 .Include(e => e.EmployeeAddresses)
-                .OrderBy(e => e.FirstName)
-                .ThenBy(e => e.LastName)
-                .Distinct()
                 .ToListAsync();
 
             return employees;
@@ -78,14 +75,19 @@ namespace ExampleLibrary
         public async Task<Employees?> EditEmployee(Employees data)
         {
             if (employeeDbContext.Employees == null) return null;
-            var saveData = await employeeDbContext.Employees.FindAsync(data.EmployeeId);
+            var saveData = await employeeDbContext.Employees
+                .Include(e => e.EmployeePhones)
+                .Include(e => e.EmployeeAddresses)
+                .FirstOrDefaultAsync(m => m.EmployeeId == data.EmployeeId);
 
             if (saveData == null)
             {
                 return null;
             }
 
-            employeeDbContext.Update(data);
+            //Map and Save
+            saveData.FirstName = data.FirstName;
+            saveData.LastName = data.LastName;
             await employeeDbContext.SaveChangesAsync();
 
             return data;
